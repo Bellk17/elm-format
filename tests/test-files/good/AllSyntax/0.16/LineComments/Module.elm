@@ -19,14 +19,15 @@ module
     where
 
 --J
-
-import
-    --L
-    String
-
-
 --K
 
+import
+    --P
+    Json.Decode
+        --Q
+        as
+            --R
+            Json
 import
     --M
     Maybe
@@ -48,38 +49,34 @@ import
               map
               --V
             )
-import
-    --P
-    Json.Decode
-        --Q
-        as
-            --R
-            Json
 import Signal
     exposing
         (--AB
          ..
          --AC
         )
+import
+    --L
+    String
 import Task
     exposing
-        ( succeed
-          -- AD
+        ( andMap
+        , andThen
         , fail
           -- AE
+        , fromMaybe
+        , fromResult
         , map
         , map2
         , map3
         , map4
         , map5
-        , andMap
-        , andThen
-        , onError
         , mapError
+        , onError
+        , succeed
+          -- AD
         , toMaybe
-        , fromMaybe
         , toResult
-        , fromResult
         )
 
 

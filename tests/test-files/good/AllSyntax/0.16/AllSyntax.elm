@@ -1,9 +1,12 @@
-module AllSyntax (fn, tuple, Type, Data(A, B, C), MultilineData(..)) where
+module AllSyntax (Data(A, B, C), MultilineData(..), Type, fn, tuple) where
 
 {-| An example of all valid Elm syntax.
 
+
 # Section
+
 @docs fn
+
 -}
 
 import Json.Decode as Json
@@ -105,9 +108,10 @@ fn2 :
     , y : String
     }
     -> String
-    -> { a
-        | x : Float
-       }
+    ->
+        { a
+            | x : Float
+        }
     -> Int
 fn2 _ _ _ =
     999
@@ -180,35 +184,6 @@ commentedLiterals =
     ( {- int -} 1, {- float -} 0.1, {- char -} 'c', {- string -} "str", {- boolean -} True )
 
 
-infixOperator =
-    1 + 2 * 3 / 4 <> 5 |> (+) 0
-
-
-multilineInfixOperators =
-    1
-        + 2
-        * 3
-        / 4
-        <> 5
-        |> (+) 0
-
-
-commentedInfixOperator =
-    1 {- plus -} + 2
-
-
-unaryOperator a =
-    -(1) + -2 + -a
-
-
-multilineUnaryOperator a =
-    -(if a then
-        1
-      else
-        2
-     )
-
-
 functionApplication =
     toString 10
 
@@ -234,46 +209,12 @@ patternAlias ({ x, y } as r) ( a, { b } as r' ) =
     r.x == y
 
 
-patternWithQualifiedConstructorAsCosntructorArgument m =
-    case m of
-        Maybe.Just (Maybe.Nothing) ->
-            ()
-
-        Maybe.Just _ ->
-            ()
-
-        Maybe.Nothing ->
-            ()
-
-
-patternWithUnqualifiedConstructorAsCosntructorArgument m =
-    case m of
-        Maybe.Just Nothing ->
-            ()
-
-        (Just _) as x ->
-            ()
-
-        Nothing as x ->
-            ()
-
-        ((Maybe.Nothing) as y) as x ->
-            ()
-
-        _ ->
-            ()
-
-
 fnAsLambda =
-    (\a -> a)
-
-
-fnAsUnparenthesizedLambda =
-    \arg -> arg
+    \a -> a
 
 
 multiArgLambda =
-    \a b ( t, s, _, ( t', s', _, ( t'', s'' ), { x', y' } ) ) { x, y } _ -> \c -> (\d -> ())
+    \a b ( t, s, _, ( t', s', _, ( t'', s'' ), { x', y' } ) ) { x, y } _ -> \c -> \d -> ()
 
 
 multilineLambda =
@@ -283,7 +224,7 @@ multilineLambda =
 
 
 parenthesizedExpressions =
-    (1 + (2 * 3) / 4) |> ((+) 0)
+    1 + (2 * 3) / 4 |> (+) 0
 
 
 multilineParenthesizedExpressions graphHeight range =
@@ -307,12 +248,13 @@ multilineParenthesizedExpressions graphHeight range =
             )
 
 
-multilineParenthesizedExpressions2 range =
+multilineParenthesizedExpressions2 range arg =
     (if range == 0 then
-        0.1
+        always 0.1
      else
         toFloat range
     )
+        arg
 
 
 recordAccess r =
@@ -343,7 +285,7 @@ multilineRecordAccess2 r f =
 
 
 chainedRecordAccess r =
-    ((r.f1.f2).f3.f4
+    (r.f1.f2.f3.f4
         -- A
         ()
     ).f5.f6
@@ -356,11 +298,11 @@ multilineRecordLiteral =
 
 
 singleLineRecord addStatus =
-    (addStatus { f1 = 50 }.f1)
+    addStatus { f1 = 50 }.f1
 
 
 singleLineRecordUpdate x =
-    (always { x | f1 = 20 }.f1)
+    always { x | f1 = 20 }.f1
 
 
 letExpression =
@@ -368,7 +310,7 @@ letExpression =
         x =
             1
     in
-        x
+    x
 
 
 multilineDeclarationInLet =
@@ -379,7 +321,7 @@ multilineDeclarationInLet =
         string' =
             "String Prime"
     in
-        string
+    string
 
 
 ifStatement b =
@@ -408,7 +350,7 @@ multilineExpressionsInsideList =
         x =
             1
       in
-        always x
+      always x
     , if True then
         always 2
       else if False then
@@ -434,7 +376,7 @@ multilineExpressionsInsideTuple a foo =
         x =
             1
       in
-        x
+      x
     , if True then
         2
       else if False then
@@ -472,7 +414,7 @@ multilineExpressionsInsideRecord =
             x =
                 1
         in
-            x
+        x
     , b =
         if True then
             2

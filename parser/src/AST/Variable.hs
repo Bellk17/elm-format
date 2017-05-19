@@ -1,11 +1,13 @@
 module AST.Variable where
 
 import AST.V0_16
+import Data.Map.Strict
 
 
 data Ref
-    = VarRef String
-    | OpRef String
+    = VarRef [UppercaseIdentifier] LowercaseIdentifier
+    | TagRef [UppercaseIdentifier] UppercaseIdentifier
+    | OpRef SymbolIdentifier
     deriving (Eq, Ord, Show)
 
 
@@ -13,14 +15,19 @@ data Ref
 
 -- | A listing of values. Something like (a,b,c) or (..) or (a,b,..)
 data Listing a
-  = ExplicitListing [Commented a] Bool
-  | OpenListing (Commented ())
-  | ClosedListing
-  deriving (Eq, Show)
+    = ExplicitListing a Bool
+    | OpenListing (Commented ())
+    | ClosedListing
+    deriving (Eq, Show)
+
+
+type CommentedMap k v =
+    Map k (Commented v)
 
 
 -- | A value that can be imported or exported
 data Value
-    = Value !Ref
-    | Union (PostCommented String) (Listing String)
+    = Value !LowercaseIdentifier
+    | OpValue SymbolIdentifier
+    | Union (PostCommented UppercaseIdentifier) (Listing (CommentedMap UppercaseIdentifier ()))
     deriving (Eq, Show)

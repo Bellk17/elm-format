@@ -6,22 +6,26 @@ import qualified AST.Expression as Expression
 import qualified AST.Pattern as Pattern
 import qualified AST.Variable as Var
 import qualified Reporting.Annotation as A
+import qualified Cheapskate.Types as Markdown
 
 
 -- DECLARATIONS
 
+type NameWithArgs name arg =
+    (name, [PreCommented arg])
+
 data Declaration
-    = Definition Pattern.Pattern [(Comments, Pattern.Pattern)] Comments Expression.Expr
-    | TypeAnnotation (Var.Ref, Comments) (Comments, Type)
+    = Definition Pattern.Pattern [PreCommented Pattern.Pattern] Comments Expression.Expr
+    | TypeAnnotation (PostCommented Var.Ref) (PreCommented Type)
     | Datatype
-        (Commented (String, [(Comments, String)]))
-        [Commented (String, [(Comments, Type)])]
-        (Comments, (String, [(Comments, Type)]))
+        { nameWithArgs :: Commented (NameWithArgs UppercaseIdentifier LowercaseIdentifier)
+        , tags :: OpenCommentedList (NameWithArgs UppercaseIdentifier Type)
+        }
     | TypeAlias Comments
-        (Commented (String, [(Comments, String)]))
-        (Comments, Type)
-    | PortAnnotation (Commented String) Comments Type
-    | PortDefinition (Commented String) Comments Expression.Expr
+        (Commented (NameWithArgs UppercaseIdentifier LowercaseIdentifier))
+        (PreCommented Type)
+    | PortAnnotation (Commented LowercaseIdentifier) Comments Type
+    | PortDefinition (Commented LowercaseIdentifier) Comments Expression.Expr
     | Fixity Assoc Comments Int Comments Var.Ref
     deriving (Eq, Show)
 
@@ -51,7 +55,7 @@ assocToString assoc =
 
 
 data Decl
-    = DocComment String
+    = DocComment Markdown.Blocks
     | BodyComment Comment
     | Decl (A.Located Declaration)
     deriving (Eq, Show)

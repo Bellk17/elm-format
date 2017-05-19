@@ -7,6 +7,8 @@ https://aur.archlinux.org/packages/elm-format-0.16-bin/
 
 https://aur.archlinux.org/packages/elm-format-0.17-bin/
 
+https://aur.archlinux.org/packages/elm-format-0.18-bin/
+
 Updating the packages
 ---------------------
 
@@ -17,14 +19,17 @@ Updating the packages
 cd elm-format/package/linux/archlinux
 
 # Clone the AUR package repo:
-git clone ssh+git://aur@aur.archlinux.org/elm-format-0.17-bin.git
+git clone ssh+git://aur@aur.archlinux.org/elm-format-0.18-bin.git
 
 # Bump `pkgver` in the `PKGBUILD` file.
 
 # Launch the Arch virtual machine (if not already on an Arch host):
 vagrant up
 vagrant ssh
-cd /vagrant/elm-format-0.17-bin
+cd /vagrant/elm-format-0.18-bin
+
+# Ensure you have @avh4's PGP key:
+curl https://keybase.io/avh4/pgp_keys.asc | gpg --import
 
 # Generate checksums:
 makepkg -g
@@ -42,9 +47,9 @@ makepkg --printsrcinfo > .SRCINFO
 exit
 
 # Commit the changes and push:
-cd elm-format-0.17-bin
+cd elm-format-0.18-bin
 git commit -am "Update to <version>"
 git push origin master
 ```
 
-Repeat the steps for the `elm-format-0.16-bin` package.
+Repeat the steps for the `elm-format-0.16-bin` and `elm-format-0.17-bin` packages.

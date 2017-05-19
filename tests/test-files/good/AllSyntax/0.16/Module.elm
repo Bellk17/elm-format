@@ -1,31 +1,31 @@
 module AllSyntax.Module (a, b, c) where
 
-import String
-import Maybe exposing (Maybe(Just, Nothing), map)
+import Dict as D
+    exposing
+        ( empty
+        , fromList
+        )
 import Json.Decode as Json
+import Maybe exposing (Maybe(Just, Nothing), map)
 import Signal exposing (..)
+import String
 import Task
     exposing
-        ( succeed
+        ( andMap
+        , andThen
         , fail
+        , fromMaybe
+        , fromResult
         , map
         , map2
         , map3
         , map4
         , map5
-        , andMap
-        , andThen
-        , onError
         , mapError
+        , onError
+        , succeed
         , toMaybe
-        , fromMaybe
         , toResult
-        , fromResult
-        )
-import Dict as D
-    exposing
-        ( empty
-        , fromList
         )
 
 

@@ -2,30 +2,28 @@
 
 set -ex
 
-VERSION="$(sed -ne "s/^Version: //p" elm-format.cabal)"
+VERSION="$(git describe --abbrev=8)"
 PLATFORM="mac-x64"
 
 ## Run tests
 
-cabal clean
-cabal configure --enable-tests
+stack clean
 ./tests/run-tests.sh
 
 
 ## Build binaries
 
-cabal clean
-cabal configure
-cabal build
-cabal install
+stack build
 
 function build-flavor() {
     FLAVOR="$1"
     BUILD="elm-format-${FLAVOR}-${VERSION}-${PLATFORM}"
     mkdir -p dist/package-scripts
-    cp ".cabal-sandbox/bin/elm-format-${FLAVOR}" dist/package-scripts/elm-format
+    ELM_FORMAT="$(stack path --local-install-root)/bin/elm-format-${FLAVOR}"
+    cp "$ELM_FORMAT" dist/package-scripts/elm-format
+    strip dist/package-scripts/elm-format
     tar zcvf "$BUILD".tgz -C dist/package-scripts elm-format
 }
 
+build-flavor 0.18
 build-flavor 0.17
-build-flavor 0.16

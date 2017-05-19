@@ -1,11 +1,13 @@
 module AST.Module
     ( Module(..), Header(..), SourceTag(..)
-    , UserImport(..), ImportMethod(..)
+    , UserImport, ImportMethod(..)
+    , DetailedListing(..)
     ) where
 
 import qualified AST.Declaration as Declaration
-import qualified AST.Module.Name as Name
 import qualified AST.Variable as Var
+import qualified Cheapskate.Types as Markdown
+import Data.Map.Strict (Map)
 import qualified Reporting.Annotation as A
 import AST.V0_16
 
@@ -16,8 +18,8 @@ import AST.V0_16
 data Module = Module
     { initialComments :: Comments
     , header :: Header
-    , docs :: A.Located (Maybe String)
-    , imports :: [UserImport]
+    , docs :: A.Located (Maybe Markdown.Blocks)
+    , imports :: PreCommented (Map [UppercaseIdentifier] (Comments, ImportMethod))
     , body :: [Declaration.Decl]
     }
     deriving (Eq, Show)
@@ -52,26 +54,32 @@ data SourceTag
 {-| Basic info needed to identify modules and determine dependencies. -}
 data Header = Header
     { srcTag :: SourceTag
-    , name :: Commented Name.Raw
+    , name :: Commented [UppercaseIdentifier]
     , moduleSettings :: Maybe (KeywordCommented SourceSettings)
-    , exports :: KeywordCommented (Var.Listing Var.Value)
+    , exports :: KeywordCommented (Var.Listing DetailedListing)
+    }
+    deriving (Eq, Show)
+
+
+data DetailedListing = DetailedListing
+    { values :: Var.CommentedMap LowercaseIdentifier ()
+    , operators :: Var.CommentedMap SymbolIdentifier ()
+    , types :: Var.CommentedMap UppercaseIdentifier (Comments, Var.Listing (Var.CommentedMap UppercaseIdentifier ()))
     }
     deriving (Eq, Show)
 
 
 type SourceSettings =
-  [(Commented String, Commented String)]
+  [(Commented LowercaseIdentifier, Commented UppercaseIdentifier)]
 
 -- IMPORTs
 
-data UserImport
-    = UserImport (A.Located (PreCommented Name.Raw, ImportMethod))
-    | ImportComment Comment
-    deriving (Eq, Show)
+type UserImport
+    = (PreCommented [UppercaseIdentifier], ImportMethod)
 
 
 data ImportMethod = ImportMethod
-    { alias :: Maybe (Comments, PreCommented String)
-    , exposedVars :: (Comments, PreCommented (Var.Listing Var.Value))
+    { alias :: Maybe (Comments, PreCommented UppercaseIdentifier)
+    , exposedVars :: (Comments, PreCommented (Var.Listing DetailedListing))
     }
     deriving (Eq, Show)

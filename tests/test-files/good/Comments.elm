@@ -2,20 +2,20 @@ module Comments (..) where
 
 {-| An example of all valid Elm syntax.
 
+
 # Section
+
 @docs fn
+
 -}
 
 -- Comments before imports
-
-import Json.Decode as Json
-import List exposing (..)
-
-
 --
 -- Imports starting with S
 --
 
+import Json.Decode as Json
+import List exposing (..)
 import Signal exposing (foldp, map)
 import String
 
@@ -34,8 +34,7 @@ comments2 =
     1
         -- plus
         -- plus
-        +
-            3
+        + 3
 
 
 records =
@@ -58,8 +57,8 @@ comments3 =
         {- comment after definitions -}
         -- ...
     in
-        {- let body -}
-        x
+    {- let body -}
+    x
 
 
 comments4 bool =
@@ -105,16 +104,19 @@ comments7 =
         y =
             ()
     in
-        ()
+    ()
 
 
 comments8 =
-    [ {- A -} 7 {- X -}
+    [ {- A -} 7
+
+    {- X -}
     , -- B
       -- C
       8
-      -- Y
-      -- Z
+
+    -- Y
+    -- Z
     ]
 
 
@@ -133,3 +135,11 @@ port {- A -} runner {- B -} : {- C -} Signal (Task.Task x ())
 port {- A -} runner {- B -} =
     -- C
     Signal.constant (Task.succeed ())
+
+
+blockCommentWithOnlyWhitespaceLines =
+    {-
+
+
+    -}
+    ()

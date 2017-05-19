@@ -1,5 +1,4 @@
-{-# OPTIONS_GHC -Wall #-}
-
+{-# LANGUAGE DuplicateRecordFields #-}
 module AST.Expression where
 
 import AST.V0_16
@@ -40,18 +39,24 @@ data Expr'
     | Binops Expr [(Comments, Var.Ref, Comments, Expr)] Bool
     | Parens (Commented Expr)
 
-    | EmptyList Comments
-    | ExplicitList [Commented Expr] Bool
+    | ExplicitList
+        { terms :: Sequence Expr
+        , trailingComments :: Comments
+        , forceMultiline :: ForceMultiline
+        }
     | Range (Commented Expr) (Commented Expr) Bool
 
     | Tuple [Commented Expr] Bool
     | TupleFunction Int -- will be 2 or greater, indicating the number of elements in the tuple
 
-    | EmptyRecord Comments
-    | Record [(Commented String, Commented Expr, Bool)] Bool
-    | RecordUpdate (Commented Expr) [(Commented String, Commented Expr, Bool)] Bool
-    | Access Expr String
-    | AccessFunction String
+    | Record
+        { base :: Maybe (Commented LowercaseIdentifier)
+        , fields :: Sequence (Pair LowercaseIdentifier Expr)
+        , trailingComments :: Comments
+        , forceMultiline :: ForceMultiline
+        }
+    | Access Expr LowercaseIdentifier
+    | AccessFunction LowercaseIdentifier
 
     | Lambda [(Comments, Pattern.Pattern)] Comments Expr Bool
     | If IfClause [(Comments, IfClause)] (Comments, Expr)

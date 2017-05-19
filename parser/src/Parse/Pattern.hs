@@ -1,14 +1,14 @@
 module Parse.Pattern (term, expr) where
 
-import qualified Data.List as List
 import Text.Parsec ((<|>), (<?>), char, choice, optionMaybe, try)
 
 import AST.V0_16
 import qualified AST.Pattern as P
-import qualified AST.Variable as Var
 import Parse.Helpers
 import qualified Parse.Literal as Literal
 import qualified Reporting.Annotation as A
+import Parse.IParser
+import Parse.Whitespace
 
 
 basic :: IParser P.Pattern
@@ -16,17 +16,17 @@ basic =
   addLocation $
     choice
       [ char '_' >> return P.Anything
-      , P.VarPattern . Var.VarRef <$> lowVar
+      , P.VarPattern <$> lowVar
       , chunksToPattern <$> dotSep1 capVar
       , P.Literal <$> Literal.literal
       ]
   where
     chunksToPattern chunks =
-        case List.intercalate "." chunks of
-          "True" ->
+        case chunks of
+          [UppercaseIdentifier "True"] ->
               P.Literal (Boolean True)
 
-          "False" ->
+          [UppercaseIdentifier "False"] ->
               P.Literal (Boolean False)
 
           name ->
@@ -106,10 +106,10 @@ term =
 patternConstructor :: IParser P.Pattern
 patternConstructor =
   addLocation $
-    do  v <- List.intercalate "." <$> dotSep1 capVar
+    do  v <- dotSep1 capVar
         case v of
-          "True"  -> return $ P.Literal (Boolean True)
-          "False" -> return $ P.Literal (Boolean False)
+          [UppercaseIdentifier "True"]  -> return $ P.Literal (Boolean True)
+          [UppercaseIdentifier "False"] -> return $ P.Literal (Boolean False)
           _       -> P.Data v <$> spacePrefix term
 
 
@@ -124,5 +124,5 @@ expr =
           case result of
             Left pattern ->
               pattern
-            Right (region, first, rest, final, _) ->
-              A.A region $ P.ConsPattern first rest final
+            Right (region, first, rest, _) ->
+              A.A region $ P.ConsPattern first rest
